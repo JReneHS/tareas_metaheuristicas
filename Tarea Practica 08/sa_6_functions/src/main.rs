@@ -1,6 +1,6 @@
 use rand::Rng;
 
-const NUM_ELEMENTS: usize = 20;
+const NUM_ELEMENTS: usize = 10;
 const TEMP_MIN: f64 = 0.01;
 const TEMP_MAX: f64 = 300.0;
 const ALPHA: f64 = 0.8;
@@ -80,13 +80,20 @@ fn simulated_annealing() {
     let mut temp: f64 = TEMP_MAX;
     let vecinos: usize = funcion_x.len() - 1;
 
-    println!("{edo_anterior}");
+    // TODO : Implementar el valor mas bajo, con que temperatura, el numero de iteracion y si se conservo o no
 
-    while temp >= TEMP_MIN {
+    let mut llamadas_costo: usize = 1;
+
+    let mut valor_mas_bajo: f64 = edo_anterior;
+    let mut iteracion_encontrada: usize = 0;
+    let mut temperatura_encantrada: f64 = 0.0;
+
+    while temp >= TEMP_MIN && llamadas_costo <= 500 {
         let mut vecinos_revisados: usize = 0;
-        while vecinos_revisados < vecinos {
+        while vecinos_revisados < vecinos && llamadas_costo <= 500 {
             let sucesor: Vec<f64> = vecindad(&funcion_x);
-            let edo_nuevo: f64 = alpine_cost(&sucesor);
+            let edo_nuevo: f64 = alpine_cost(&sucesor); // ***** +1
+            llamadas_costo += 1;
             let delta = edo_nuevo - edo_anterior;
             if delta > 0.0 {
                 if rand::thread_rng().gen_range(0.0..1.0) < (-delta / (K * temp)).exp() {
@@ -96,6 +103,11 @@ fn simulated_annealing() {
             } else {
                 edo_anterior = edo_nuevo;
                 funcion_x = sucesor;
+                if edo_nuevo < valor_mas_bajo {
+                    valor_mas_bajo = edo_nuevo;
+                    iteracion_encontrada = llamadas_costo;
+                    temperatura_encantrada = temp;
+                }
             }
             vecinos_revisados += 1;
         }
@@ -105,5 +117,7 @@ fn simulated_annealing() {
 }
 
 fn main() {
-    simulated_annealing();
+    for _ in 0..20 {
+        simulated_annealing();
+    }
 }
