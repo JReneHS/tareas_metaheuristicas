@@ -1,6 +1,7 @@
 use rand::Rng;
+use std::time::Instant;
 
-const NUM_ELEMENTS: usize = 10;
+const NUM_ELEMENTS: usize = 30;
 const TEMP_MIN: f64 = 0.01;
 const TEMP_MAX: f64 = 300.0;
 const ALPHA: f64 = 0.8;
@@ -70,17 +71,18 @@ fn vecindad(funcion: &[f64]) -> Vec<f64> {
     vecindad
 }
 
-fn simulated_annealing() {
+fn simulated_annealing() -> String {
     let mut funcion_x: Vec<f64> = Vec::with_capacity(NUM_ELEMENTS);
+
     for _ in 0..NUM_ELEMENTS {
         funcion_x.push(rand::thread_rng().gen_range(-10.0..=10.0));
     }
-    let mut edo_anterior: f64 = alpine_cost(&funcion_x);
+
+    let mut edo_anterior: f64 = sum_squares_cost(&funcion_x); // *****************************************
 
     let mut temp: f64 = TEMP_MAX;
-    let vecinos: usize = funcion_x.len() - 1;
 
-    // TODO : Implementar el valor mas bajo, con que temperatura, el numero de iteracion y si se conservo o no
+    let vecinos: usize = funcion_x.len() - 1;
 
     let mut llamadas_costo: usize = 1;
 
@@ -92,7 +94,7 @@ fn simulated_annealing() {
         let mut vecinos_revisados: usize = 0;
         while vecinos_revisados < vecinos && llamadas_costo <= 500 {
             let sucesor: Vec<f64> = vecindad(&funcion_x);
-            let edo_nuevo: f64 = alpine_cost(&sucesor); // ***** +1
+            let edo_nuevo: f64 = sum_squares_cost(&sucesor); // *****************************************
             llamadas_costo += 1;
             let delta = edo_nuevo - edo_anterior;
             if delta > 0.0 {
@@ -113,11 +115,28 @@ fn simulated_annealing() {
         }
         temp *= ALPHA;
     }
-    println!("{edo_anterior}");
+    let res: String = format!(
+        "| {} | {} | {} | {} | {} | {} |",
+        edo_anterior,
+        temp,
+        valor_mas_bajo,
+        temperatura_encantrada,
+        iteracion_encontrada,
+        edo_anterior == valor_mas_bajo
+    );
+    res
 }
 
 fn main() {
+    println!("## D=30 Funcion 6: sum_squares_cost\n");
+    println!("| Costo Final | Temp Min | Valor Mejor Solución | Temperatura Mejor Solución | Iteración Mejor Solución | Se Conserva (?) | Tiempo |");
+    println!("|-------------|----------|----------------------|----------------------------|--------------------------|-----------------|--------|");
     for _ in 0..20 {
-        simulated_annealing();
+        let start: Instant = std::time::Instant::now();
+        println!(
+            "{} {} |",
+            simulated_annealing(),
+            start.elapsed().as_secs_f64()
+        );
     }
 }
