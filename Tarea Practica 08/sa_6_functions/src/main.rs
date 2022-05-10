@@ -10,7 +10,8 @@ const K: f64 = 1.0;
 fn alpine_cost(funcion: &[f64]) -> f64 {
     let mut valmax: f64 = 0.0;
     funcion.iter().for_each(|&x| {
-        valmax += ((x * x.to_radians().sin()) + (0.1 * x)).abs(); // El sin esta en Radianes
+        // El sin esta en Radianes
+        valmax += ((x * x.to_radians().sin()) + (0.1 * x)).abs();
     });
     valmax
 }
@@ -78,7 +79,7 @@ fn simulated_annealing() -> String {
         funcion_x.push(rand::thread_rng().gen_range(-10.0..=10.0));
     }
 
-    let mut edo_anterior: f64 = sum_squares_cost(&funcion_x); // *****************************************
+    let mut edo_anterior: f64 = sum_squares_cost(&funcion_x);
 
     let mut temp: f64 = TEMP_MAX;
 
@@ -94,7 +95,7 @@ fn simulated_annealing() -> String {
         let mut vecinos_revisados: usize = 0;
         while vecinos_revisados < vecinos && llamadas_costo <= 500 {
             let sucesor: Vec<f64> = vecindad(&funcion_x);
-            let edo_nuevo: f64 = sum_squares_cost(&sucesor); // *****************************************
+            let edo_nuevo: f64 = sum_squares_cost(&sucesor);
             llamadas_costo += 1;
             let delta = edo_nuevo - edo_anterior;
             if delta > 0.0 {

@@ -99,4 +99,4 @@ def rmhc():
 for i in range(20):
     start_time = time()
     rmhc()
-    #print("%s" % (time() - start_time))
+    print("%s" % (time() - start_time))
