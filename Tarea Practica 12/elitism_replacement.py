@@ -48,18 +48,22 @@ print("\n\nPoblacion inicial:")
 for i in poblacion:
     print(i)
 
+
+descendiente = Gen(2, generar_cromosoma())
+
+reemplazo = min(poblacion, key=lambda x: x.aptitud)
+
+
+if descendiente.aptitud > reemplazo:
+    poblacion.pop(reemplazo.index())
+    poblacion.append(descendiente)
+
+
 elite = max(poblacion, key=lambda x: x.aptitud)
-
-reemplazo = random.randint(0, tam_poblacion-1)
-bandera = True
-
-if poblacion[reemplazo] != elite:
-    bandera = False
-    poblacion.pop(reemplazo)
-    poblacion.append(Gen(2, generar_cromosoma()))
 
 print("\n\n elite generacional:")
 print(elite)
+
 print("Distancia Hamming:")
 print(hamming(elite, poblacion[reemplazo]))
 
@@ -67,5 +71,3 @@ print("\n\nPoblacion Final:")
 for i in poblacion:
     print(i)
 
-if bandera:
-    print("\n<< Se intento reemplazar al elite >>")
