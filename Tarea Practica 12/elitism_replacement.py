@@ -18,7 +18,7 @@ class Gen:
         return sum(self.cromosoma) * random.randint(2, 10)
 
     def __str__(self):
-        return "< Crom: " + str(self.cromosoma) + " Apt: " + str(self.aptitud) + " Gen:" + str(self.generacion) + " >"
+        return "< Crom: " + str(self.cromosoma) + " Apt: " + str(self.aptitud) + " Gen: " + str(self.generacion) + " >"
 
 
 # Con Valores de Representaciones de Orden
@@ -48,26 +48,21 @@ print("\n\nPoblacion inicial:")
 for i in poblacion:
     print(i)
 
-
 descendiente = Gen(2, generar_cromosoma())
 
+# Seleccion de Peor (Maximizar)
 reemplazo = min(poblacion, key=lambda x: x.aptitud)
 
-
-if descendiente.aptitud > reemplazo:
-    poblacion.pop(reemplazo.index())
+if descendiente.aptitud > reemplazo.aptitud:
+    poblacion.pop(poblacion.index(reemplazo))
     poblacion.append(descendiente)
 
-
-elite = max(poblacion, key=lambda x: x.aptitud)
-
-print("\n\n elite generacional:")
-print(elite)
-
-print("Distancia Hamming:")
-print(hamming(elite, poblacion[reemplazo]))
 
 print("\n\nPoblacion Final:")
 for i in poblacion:
     print(i)
 
+elite = max(poblacion, key=lambda x: x.aptitud)
+
+print("\n\n elite generacional:")
+print(elite)

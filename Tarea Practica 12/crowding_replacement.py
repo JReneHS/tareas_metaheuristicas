@@ -20,7 +20,7 @@ class Gen:
 
     def __str__(self):
         cromosoma_str = [round(x, 2) for x in self.cromosoma]
-        return "< Crom: " + str(cromosoma_str) + " Apt: " + str(round(self.aptitud, 2)) + " Gen:" + str(self.generacion) + " >"
+        return "< Crom: " + str(cromosoma_str) + " Apt: " + str(round(self.aptitud, 2)) + " Gen: " + str(self.generacion) + " >"
 
 
 # Con valores Reales
@@ -47,6 +47,20 @@ def hamming(gen1, gen2):
     return result
 
 
+def uniform_crossover(gen1, gen2):
+    descendienteA = []
+    descendienteB = []
+
+    for j in range(tam_cromosoma):
+        if random.random() < 0.5:
+            descendienteA.append(gen1.cromosoma[j])
+            descendienteB.append(gen2.cromosoma[j])
+        else:
+            descendienteA.append(gen2.cromosoma[j])
+            descendienteB.append(gen1.cromosoma[j])
+    return descendienteA, descendienteB
+
+
 poblacion = []
 
 for _ in range(tam_poblacion):
@@ -56,14 +70,16 @@ print("\n\nPoblacion Inicial:")
 for i in poblacion:
     print(i)
 
-descendiete1 = Gen(2, generar_cromosoma())
-descendiete2 = Gen(2, generar_cromosoma())
-
-
 pos1 = random.randint(0, tam_poblacion-1)
 padre1 = poblacion.pop(pos1)
 pos2 = random.randint(0, tam_poblacion-2)
 padre2 = poblacion.pop(pos2)
+
+
+des_crom1, des_crom2 = uniform_crossover(padre1, padre2)
+descendiete1 = Gen(2, des_crom1)
+descendiete2 = Gen(2, des_crom2)
+
 
 dis_11 = distancia_cromosoma(padre1, descendiete1)
 dis_12 = distancia_cromosoma(padre1, descendiete2)
