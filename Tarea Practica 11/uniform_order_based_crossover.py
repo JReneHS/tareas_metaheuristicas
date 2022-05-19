@@ -50,15 +50,8 @@ for i in range(tam_cromosoma):
 # Rellenar los espacios restantes del Hijo A con los valores en orden del Padre B
 padre = 0
 for i in range(tam_cromosoma):
-    if descendienteA[i] == 0:
+    if template_binario[i] == 0:
         descendienteA[i] = buffer_hijo_A[padre]
-        padre += 1
-
-
-# Rellenar los espacios restantes del Hijo B con los valores en orden del Padre A
-padre = 0
-for i in range(tam_cromosoma):
-    if descendienteB[i] == 0:
         descendienteB[i] = buffer_hijo_B[padre]
         padre += 1
 
