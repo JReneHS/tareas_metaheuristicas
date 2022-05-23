@@ -12,6 +12,8 @@ peso_maximo = 100
 
 humbral = 0.1
 
+prob_cruzamiento = 0.6
+
 poblacion = []
 
 
@@ -132,17 +134,22 @@ while generacion_global < 500:
     generacion_global += 1
     gen1 = seleccion_torneo(poblacion)
     gen2 = seleccion_torneo(poblacion)
-    # Cruzamiento de los padres
-    crom_des1, crom_des2 = uniform_crossover(gen1, gen2)
-    des1 = Gen(generacion_global, crom_des1)
-    des2 = Gen(generacion_global, crom_des2)
-    # Mutacion del descendiente
-    des1.mutacion()
-    des2.mutacion()
+    # Probabilidad de Cruzamiento.
+    if random.random() < prob_cruzamiento:
+        # Cruzamiento de los padres
+        crom_des1, crom_des2 = uniform_crossover(gen1, gen2)
+        des1 = Gen(generacion_global, crom_des1)
+        des2 = Gen(generacion_global, crom_des2)
+        # Mutacion del descendiente
+        des1.mutacion()
+        des2.mutacion()
 
-    des1.calcular_aptitud()
-    des2.calcular_aptitud()
+        des1.calcular_aptitud()
+        des2.calcular_aptitud()
 
-    crowding_replacement(poblacion, des1, des2, gen1, gen2)
+        crowding_replacement(poblacion, des1, des2, gen1, gen2)
+    else:
+        poblacion.append(gen1)
+        poblacion.append(gen2)
     print(max(poblacion, key=lambda x: x.aptitud))
     #print(tam_poblacion == len(poblacion))

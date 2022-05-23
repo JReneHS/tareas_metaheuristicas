@@ -8,6 +8,8 @@ k_torneo = 2  # tam de la poblacion del torneo
 
 humbral = 0.1
 
+prob_cruzamiento = 0.6
+
 poblacion = []
 
 
@@ -87,14 +89,19 @@ while generacion_global < 500:
     generacion_global += 1
     gen1 = seleccion_torneo(poblacion)
     gen2 = seleccion_torneo(poblacion)
-    # Cruzamiento de los padres
-    cromosoma_descendiente = uniform_crossover(gen1, gen2)
-    descendiente = Gen(generacion_global, cromosoma_descendiente)
-    # Mutacion del descendiente
-    descendiente.mutacion()
-    descendiente.calcular_aptitud()
-    # Remplazo Elitita
-    elitism_replacement(poblacion, descendiente)
+    # Probabilidad de Cruzamiento.
+    if random.random() < prob_cruzamiento:
+        # Cruzamiento de los padres
+        cromosoma_descendiente = uniform_crossover(gen1, gen2)
+        descendiente = Gen(generacion_global, cromosoma_descendiente)
+        # Mutacion del descendiente
+        descendiente.mutacion()
+        descendiente.calcular_aptitud()
+        # Remplazo Elitita
+        elitism_replacement(poblacion, descendiente)
+    else:
+        poblacion.append(gen1)
+        poblacion.append(gen2)
 
     print(min(poblacion, key=lambda x: x.aptitud))
 
