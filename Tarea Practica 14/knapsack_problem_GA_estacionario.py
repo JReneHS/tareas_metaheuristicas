@@ -57,11 +57,20 @@ def generar_cromosoma():
 
 def seleccion_torneo(poblacion):
     torneo = []
+
     for i in range(k_torneo):
-        seleccion = random.randint(0, tam_poblacion - 1)
+        seleccion = random.randint(0, len(poblacion) - 1)
         gen = poblacion[seleccion]
         torneo.append(gen)
-    return max(torneo, key=lambda x: x.aptitud)
+        poblacion.pop(poblacion.index(gen))
+
+    select = min(torneo, key=lambda x: x.aptitud)
+    torneo.pop(torneo.index(select))
+
+    for i in torneo:
+        poblacion.append(i)
+
+    return select
 
 
 def uniform_crossover(gen1, gen2):
@@ -130,8 +139,10 @@ while generacion_global < 500:
     # Mutacion del descendiente
     des1.mutacion()
     des2.mutacion()
+
     des1.calcular_aptitud()
     des2.calcular_aptitud()
 
     crowding_replacement(poblacion, des1, des2, gen1, gen2)
     print(max(poblacion, key=lambda x: x.aptitud))
+    #print(tam_poblacion == len(poblacion))

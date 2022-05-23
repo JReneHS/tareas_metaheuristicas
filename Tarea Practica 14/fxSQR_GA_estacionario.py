@@ -97,3 +97,4 @@ while generacion_global < 500:
     elitism_replacement(poblacion, descendiente)
 
     print(min(poblacion, key=lambda x: x.aptitud))
+
