@@ -57,13 +57,16 @@ def seleccion_torneo(poblacion):
 
 def uniform_crossover(gen1, gen2):
     descendienteA = []
+    descendienteB = []
 
     for j in range(tam_cromosoma):
         if random.random() < 0.5:
             descendienteA.append(gen1.cromosoma[j])
+            descendienteB.append(gen2.cromosoma[j])
         else:
             descendienteA.append(gen2.cromosoma[j])
-    return descendienteA
+            descendienteB.append(gen1.cromosoma[j])
+    return descendienteA, descendienteB
 
 
 def elitism_replacement(poblacion, descendiente):
@@ -92,16 +95,18 @@ while generacion_global < 500:
     # Probabilidad de Cruzamiento.
     if random.random() < prob_cruzamiento:
         # Cruzamiento de los padres
-        cromosoma_descendiente = uniform_crossover(gen1, gen2)
-        descendiente = Gen(generacion_global, cromosoma_descendiente)
+        crom_des1, crom_des2 = uniform_crossover(gen1, gen2)
+        descendiente1 = Gen(generacion_global, crom_des1)
+        descendiente2 = Gen(generacion_global, crom_des2)
         # Mutacion del descendiente
-        descendiente.mutacion()
-        descendiente.calcular_aptitud()
+        descendiente1.mutacion()
+        descendiente2.mutacion()
+
+        descendiente1.calcular_aptitud()
+        descendiente2.calcular_aptitud()
         # Remplazo Elitita
-        elitism_replacement(poblacion, descendiente)
-    else:
-        poblacion.append(gen1)
-        poblacion.append(gen2)
+        elitism_replacement(poblacion, descendiente1)
+        elitism_replacement(poblacion, descendiente2)
 
     print(min(poblacion, key=lambda x: x.aptitud))
-
+    #print(tam_poblacion == len(poblacion))
