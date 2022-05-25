@@ -20,15 +20,63 @@ class Gen:
 
     def __init__(self, generacion, cromosoma):
         self.cromosoma = cromosoma
-        self.calcular_aptitud()
+        self.fitness1()
         self.generacion = generacion
 
 # **********************************************************************************************************************
+    # Alpine 1 Function
 
-    def calcular_aptitud(self):
+    def fitness1(self):
         valmax = 0.0
         for i in self.cromosoma:
-            valmax += i**2
+            valmax += abs(i*(math.sin(i))+0.1*(i))
+        self.aptitud = valmax
+
+
+    # Dixon & Price Function
+
+
+    def fitness2(self):
+        valmax = (self.cromosoma[0] - 1)**2
+        for i in range(1, tam_cromosoma):
+            valmax += i*(2*math.sin(self.cromosoma[i])-self.cromosoma[i-1])**2
+        self.aptitud = valmax
+
+    # Quintic Function
+
+
+    def fitness3(self):
+        valmax = 0
+        for i in self.cromosoma:
+            valmax += abs((i**5)-(3*(i**4))+(4*(i**3))-(2*(i**2))-(10*i)-4)
+        self.aptitud = valmax
+
+    # Schwefel 2.23 Function
+
+
+    def fitness4(self):
+        valmax = 0
+        for i in self.cromosoma:
+            valmax += i**10
+        self.aptitud = valmax
+
+    # Streched V Sine Wave Function
+
+
+    def fitness5(self):
+        valmax = 0
+        for i in range(tam_cromosoma - 1):
+            valmax += ((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.25) * \
+                ((math.sin(50*((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.1))**2)+0.1)
+        self.aptitud = valmax
+
+    # Sum Squares Function
+
+
+    def fitness6(self):
+        valmax = 0
+        for j, xi in enumerate(self.cromosoma):
+            valmax += j * (xi**2)
         self.aptitud = valmax
 
 # **********************************************************************************************************************
@@ -109,27 +157,37 @@ def GA():
             descendiente1.mutacion()
             descendiente2.mutacion()
 
-            descendiente1.calcular_aptitud()
-            descendiente2.calcular_aptitud()
+            descendiente1.fitness1()
+            descendiente2.fitness1()
             evaluaciones += 2
             # Remplazo Elitita
             elitism_replacement(poblacion, descendiente1)
             elitism_replacement(poblacion, descendiente2)
 
-    aptitudes = []
-    for i in poblacion:
-        aptitudes.append(i.aptitud)
+    return min(poblacion, key=lambda x: x.aptitud)
 
-    mejor = min(aptitudes)
-    peor = max(aptitudes)
-    mean = statistics.mean(aptitudes)
-    median = statistics.median(aptitudes)
-    sigma = statistics.pstdev(aptitudes)
 
-    return str(mejor) + " " + str(peor) + " " + str(mean) + " " + str(median) + " " + str(sigma)
-
+aptitudes = []
+tiempo = []
 
 for i in range(20):
     start_time = time()
-    strr = GA()
-    print(strr ,(time() - start_time))
+    aptitudes.append(GA().aptitud)
+    tiempo.append(time() - start_time)
+
+mejorA = min(aptitudes)
+peorA = max(aptitudes)
+meanA = statistics.mean(aptitudes)
+medianA = statistics.median(aptitudes)
+sigmaA = statistics.pstdev(aptitudes)
+
+mejorT = min(tiempo)
+peorT = max(tiempo)
+meanT = statistics.mean(tiempo)
+medianT = statistics.median(tiempo)
+sigmaT = statistics.pstdev(tiempo)
+
+print("aptitud: ")
+print(str(mejorA) + " " + str(peorA) + " " + str(meanA) + " " + str(medianA) + " " + str(sigmaA))
+print("Tiempo: ")
+print(str(mejorT) + " " + str(peorT) + " " + str(meanT) + " " + str(medianT) + " " + str(sigmaT))
