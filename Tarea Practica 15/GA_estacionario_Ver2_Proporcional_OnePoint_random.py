@@ -1,16 +1,15 @@
+import math
 import random
+from time import time
+import statistics
 
 
 tam_cromosoma = 10
 tam_poblacion = 10
-generacion_global = 1
 
 humbral = 0.1
 
 prob_cruzamiento = 0.5
-
-poblacion = []
-
 
 class Gen:
     cromosoma = []
@@ -39,7 +38,7 @@ class Gen:
 
     def __str__(self):
         cromosoma_str = [round(x, 2) for x in self.cromosoma]
-        return "< Crom: " + str(cromosoma_str) + " Apt: " + str(self.aptitud) + " Gen: " + str(self.generacion) + " >"
+        return "< Crom: " + str(cromosoma_str) + " Apt: " + str(round(self.aptitud,2)) + " Gen: " + str(self.generacion) + " >"
 
 
 # Con Valores de Representaciones de Orden
@@ -93,33 +92,50 @@ def random_replacement(poblacion, descendiente):
 # **********************************************************************************************************************
 
 
-# Generacion Inicial aleatoria
-for _ in range(tam_poblacion):
-    poblacion.append(Gen(generacion_global, generar_cromosoma()))
+def GA():
+    poblacion = []
+    generacion_global = 1
 
-print(min(poblacion, key=lambda x: x.aptitud))
+    # Generacion Inicial aleatoria
+    for _ in range(tam_poblacion):
+        poblacion.append(Gen(generacion_global, generar_cromosoma()))
 
-# Iteracion para 500 generaciones
-while generacion_global < 500:
-    # Generando nueva poblacion
-    generacion_global += 1
-    gen1 = seleccion_proporcional(poblacion)
-    gen2 = seleccion_proporcional(poblacion)
-    # Probabilidad de Cruzamiento.
-    if random.random() > prob_cruzamiento:
-        # Cruzamiento de los padres
-        crom_des1, crom_des2 = one_point_crossover(gen1, gen2)
-        descendiente1 = Gen(generacion_global, crom_des1)
-        descendiente2 = Gen(generacion_global, crom_des2)
-        # Mutacion del descendiente
-        descendiente1.mutacion()
-        descendiente2.mutacion()
+    # Iteracion para 500 generaciones
+    while generacion_global < 500:
+        # Generando nueva poblacion
+        generacion_global += 1
+        gen1 = seleccion_proporcional(poblacion)
+        gen2 = seleccion_proporcional(poblacion)
+        # Probabilidad de Cruzamiento.
+        if random.random() > prob_cruzamiento:
+            # Cruzamiento de los padres
+            crom_des1, crom_des2 = one_point_crossover(gen1, gen2)
+            descendiente1 = Gen(generacion_global, crom_des1)
+            descendiente2 = Gen(generacion_global, crom_des2)
+            # Mutacion del descendiente
+            descendiente1.mutacion()
+            descendiente2.mutacion()
 
-        descendiente1.calcular_aptitud()
-        descendiente2.calcular_aptitud()
-        # Remplazo Elitita
-        random_replacement(poblacion, descendiente1)
-        random_replacement(poblacion, descendiente2)
+            descendiente1.calcular_aptitud()
+            descendiente2.calcular_aptitud()
+            # Remplazo Elitita
+            random_replacement(poblacion, descendiente1)
+            random_replacement(poblacion, descendiente2)
 
-    print(min(poblacion, key=lambda x: x.aptitud))
-    print(tam_poblacion == len(poblacion))
+    aptitudes = []
+    for i in poblacion:
+        aptitudes.append(i.aptitud)
+
+    mejor = min(aptitudes)
+    peor = max(aptitudes)
+    mean = statistics.mean(aptitudes)
+    median = statistics.median(aptitudes)
+    sigma = statistics.pstdev(aptitudes)
+
+    return str(mejor) + " " + str(peor) + " " + str(mean) + " " + str(median) + " " + str(sigma)
+
+
+for i in range(20):
+    start_time = time()
+    strr = GA()
+    print(strr ,(time() - start_time))
