@@ -22,11 +22,15 @@ class Gen:
         self.calcular_aptitud()
         self.generacion = generacion
 
+# **********************************************************************************************************************
+
     def calcular_aptitud(self):
         valmax = 0.0
         for i in self.cromosoma:
             valmax += i**2
         self.aptitud = valmax
+
+# **********************************************************************************************************************
 
     def mutacion(self):
         for i in range(tam_cromosoma):

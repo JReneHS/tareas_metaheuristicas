@@ -5,6 +5,8 @@ tam_cromosoma = 10
 tam_poblacion = 20
 generacion_global = 1
 k_torneo = 2  # tam de la poblacion del torneo
+humbral = 0.1
+prob_cruzamiento = 0.6
 
 valor_objetos = [25, 21, 13, 19, 24, 22, 12, 21, 15, 13]
 peso_objetos = [20, 16, 27, 16, 15, 30, 35, 15, 40, 48]
@@ -22,7 +24,7 @@ class Gen:
 
     def __init__(self, generacion, cromosoma):
         self.cromosoma = cromosoma
-        self.aptitud = self.calcular_aptitud()
+        self.calcular_aptitud()
         self.generacion = generacion
 
     def calcular_aptitud(self):
@@ -37,11 +39,12 @@ class Gen:
         if peso_aux < 0:
             valmax = -1
 
-        return int(valmax)
+        self.aptitud = int(valmax)
 
     def mutacion(self):
-        self.cromosoma[random.randint(
-            0, tam_cromosoma-1)] = random.randint(0, 1)
+        for i in range(tam_cromosoma):
+            if random.random() < humbral:
+                self.cromosoma[i] = random.randint(0, 1)
 
     def __str__(self):
         return "< Crom: " + str(self.cromosoma) + " Apt: " + str(self.aptitud) + " Gen: " + str(self.generacion) + " >"
@@ -93,6 +96,10 @@ while generacion_global < 500:
     # Generando nueva poblacion
     generacion_global += 1
     while len(nueva_poblacion) != tam_poblacion:
+
+        if random.random() > prob_cruzamiento:
+            continue
+
         gen1 = seleccion_torneo(poblacion)
         gen2 = seleccion_torneo(poblacion)
         # Cruzamiento de los padres

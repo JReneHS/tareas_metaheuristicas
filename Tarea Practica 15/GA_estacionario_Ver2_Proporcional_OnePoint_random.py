@@ -1,9 +1,9 @@
 import random
 
+
 tam_cromosoma = 10
-tam_poblacion = 50
+tam_poblacion = 10
 generacion_global = 1
-k_torneo = 2  # tam de la poblacion del torneo
 
 humbral = 0.1
 
@@ -22,11 +22,15 @@ class Gen:
         self.calcular_aptitud()
         self.generacion = generacion
 
+# **********************************************************************************************************************
+
     def calcular_aptitud(self):
         valmax = 0.0
         for i in self.cromosoma:
             valmax += i**2
         self.aptitud = valmax
+
+# **********************************************************************************************************************
 
     def mutacion(self):
         for i in range(tam_cromosoma):
@@ -45,36 +49,46 @@ def generar_cromosoma():
     return cromosoma
 
 
-def seleccion_torneo(poblacion):
-    torneo = []
-    for i in range(k_torneo):
-        seleccion = random.randint(0, tam_poblacion - 1)
-        gen = poblacion[seleccion]
-        torneo.append(gen)
-    return min(torneo, key=lambda x: x.aptitud)
+def seleccion_proporcional(poblacion):
+
+    probabilidad = []
+    probTotal = 0
+    flecha = random.random()
+    ruleta = [0]
+
+    for i in poblacion:
+        probTotal += i.aptitud
+
+    for i in poblacion:
+        probabilidad.append(i.aptitud / probTotal)
+
+    for i in range(tam_poblacion):
+        ruleta.append(probabilidad[i]+ruleta[i])
+
+    ruleta.append(flecha)
+    ruleta.sort()
+    posicion = ruleta.index(flecha)
+    apareamiento = poblacion[posicion-1]
+
+    return apareamiento
 
 
-def uniform_crossover(gen1, gen2):
+def one_point_crossover(gen1, gen2):
     descendienteA = []
     descendienteB = []
 
-    for j in range(tam_cromosoma):
-        if random.random() < 0.5:
-            descendienteA.append(gen1.cromosoma[j])
-            descendienteB.append(gen2.cromosoma[j])
-        else:
-            descendienteA.append(gen2.cromosoma[j])
-            descendienteB.append(gen1.cromosoma[j])
+    punto_corte = random.randint(1, tam_cromosoma-1)
+
+    descendienteA = gen1.cromosoma[:punto_corte] + gen2.cromosoma[punto_corte:]
+    descendienteB = gen2.cromosoma[:punto_corte] + gen1.cromosoma[punto_corte:]
+
     return descendienteA, descendienteB
 
 
-def elitism_replacement(poblacion, descendiente):
-    # Seleccion de Peor (Minimizar)
-    reemplazo = max(poblacion, key=lambda x: x.aptitud)
-
-    if descendiente.aptitud < reemplazo.aptitud:
-        poblacion.pop(poblacion.index(reemplazo))
-        poblacion.append(descendiente)
+def random_replacement(poblacion, descendiente):
+    reemplazo = random.randint(0, tam_poblacion-1)
+    poblacion.pop(reemplazo)
+    poblacion.append(descendiente)
 
 # **********************************************************************************************************************
 
@@ -86,15 +100,15 @@ for _ in range(tam_poblacion):
 print(min(poblacion, key=lambda x: x.aptitud))
 
 # Iteracion para 500 generaciones
-while generacion_global < 5000:
+while generacion_global < 500:
     # Generando nueva poblacion
     generacion_global += 1
-    gen1 = seleccion_torneo(poblacion)
-    gen2 = seleccion_torneo(poblacion)
+    gen1 = seleccion_proporcional(poblacion)
+    gen2 = seleccion_proporcional(poblacion)
     # Probabilidad de Cruzamiento.
     if random.random() > prob_cruzamiento:
         # Cruzamiento de los padres
-        crom_des1, crom_des2 = uniform_crossover(gen1, gen2)
+        crom_des1, crom_des2 = one_point_crossover(gen1, gen2)
         descendiente1 = Gen(generacion_global, crom_des1)
         descendiente2 = Gen(generacion_global, crom_des2)
         # Mutacion del descendiente
@@ -104,8 +118,8 @@ while generacion_global < 5000:
         descendiente1.calcular_aptitud()
         descendiente2.calcular_aptitud()
         # Remplazo Elitita
-        elitism_replacement(poblacion, descendiente1)
-        elitism_replacement(poblacion, descendiente2)
+        random_replacement(poblacion, descendiente1)
+        random_replacement(poblacion, descendiente2)
 
     print(min(poblacion, key=lambda x: x.aptitud))
-    #print(tam_poblacion == len(poblacion))
+    print(tam_poblacion == len(poblacion))

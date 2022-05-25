@@ -5,6 +5,8 @@ tam_cromosoma = 10
 tam_poblacion = 20
 generacion_global = 1
 k_torneo = 2  # tam de la poblacion del torneo
+humbral = 0.1
+prob_cruzamiento = 0.6
 
 poblacion = []
 nueva_poblacion = []
@@ -12,23 +14,24 @@ nueva_poblacion = []
 
 class Gen:
     cromosoma = []
-    aptitud = int
+    aptitud = float
     generacion = int
 
     def __init__(self, generacion, cromosoma):
         self.cromosoma = cromosoma
-        self.aptitud = self.calcular_aptitud()
+        self.calcular_aptitud()
         self.generacion = generacion
 
     def calcular_aptitud(self):
         valmax = 0
         for i in self.cromosoma:
             valmax += i**2
-        return valmax
+        self.aptitud = float(valmax)
 
     def mutacion(self):
-        self.cromosoma[random.randint(
-            0, tam_cromosoma-1)] = random.uniform(-10, 10)
+        for i in range(tam_cromosoma):
+            if random.random() < humbral:
+                self.cromosoma[i] = random.uniform(-10, 10)
 
     def __str__(self):
         cromosoma_str = [round(x, 2) for x in self.cromosoma]
@@ -53,13 +56,16 @@ def seleccion_torneo(poblacion):
 
 def uniform_crossover(gen1, gen2):
     descendienteA = []
+    descendienteB = []
 
     for j in range(tam_cromosoma):
         if random.random() < 0.5:
             descendienteA.append(gen1.cromosoma[j])
+            descendienteB.append(gen2.cromosoma[j])
         else:
             descendienteA.append(gen2.cromosoma[j])
-    return descendienteA
+            descendienteB.append(gen1.cromosoma[j])
+    return descendienteA, descendienteB
 
 
 def replacement(poblacion, nueva_poblacion):
@@ -77,19 +83,29 @@ for _ in range(tam_poblacion):
 print(min(poblacion, key=lambda x: x.aptitud))
 
 # Iteracion para 500 generaciones
-while generacion_global < 500:
+while generacion_global < 5000:
     # Generando nueva poblacion
     generacion_global += 1
     while len(nueva_poblacion) != tam_poblacion:
+
+        if random.random() > prob_cruzamiento:
+            continue
+
         gen1 = seleccion_torneo(poblacion)
         gen2 = seleccion_torneo(poblacion)
         # Cruzamiento de los padres
-        cromosoma_descendiente = uniform_crossover(gen1, gen2)
-        descendiente = Gen(generacion_global, cromosoma_descendiente)
+        crom_des1, crom_des2 = uniform_crossover(gen1, gen2)
+        descendiente1 = Gen(generacion_global, crom_des1)
+        descendiente2 = Gen(generacion_global, crom_des2)
         # Mutacion del descendiente
-        descendiente.mutacion()
+        descendiente1.mutacion()
+        descendiente2.mutacion()
+
+        descendiente1.calcular_aptitud()
+        descendiente2.calcular_aptitud()
         # Insertando el descendiente en la nueva poblacion
-        nueva_poblacion.append(descendiente)
+        nueva_poblacion.append(descendiente1)
+        nueva_poblacion.append(descendiente2)
 
     replacement(poblacion, nueva_poblacion)
     print(min(poblacion, key=lambda x: x.aptitud))

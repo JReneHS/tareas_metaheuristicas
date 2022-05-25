@@ -170,7 +170,7 @@ while generacion_global < 500:
     gen1 = seleccion_torneo(poblacion)
     gen2 = seleccion_torneo(poblacion)
     # Probabilidad de Cruzamiento.
-    if random.random() < prob_cruzamiento:
+    if random.random() > prob_cruzamiento:
         # Cruzamiento de los padres
         crom_des1, crom_des2 = uniform_order_based_crossover(
             gen1.cromosoma, gen2.cromosoma)
@@ -183,7 +183,8 @@ while generacion_global < 500:
         descendiente1.calcular_aptitud()
         descendiente2.calcular_aptitud()
 
-        crowding_replacement(poblacion, descendiente1, descendiente2, gen1, gen2)
+        crowding_replacement(poblacion, descendiente1,
+                             descendiente2, gen1, gen2)
     else:
         poblacion.append(gen1)
         poblacion.append(gen2)

@@ -135,7 +135,7 @@ while generacion_global < 500:
     gen1 = seleccion_torneo(poblacion)
     gen2 = seleccion_torneo(poblacion)
     # Probabilidad de Cruzamiento.
-    if random.random() < prob_cruzamiento:
+    if random.random() > prob_cruzamiento:
         # Cruzamiento de los padres
         crom_des1, crom_des2 = uniform_crossover(gen1, gen2)
         des1 = Gen(generacion_global, crom_des1)
