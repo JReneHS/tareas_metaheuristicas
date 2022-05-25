@@ -15,7 +15,7 @@ poblacion = []
 
 class Gen:
     cromosoma = []
-    aptitud = int
+    aptitud = float
     generacion = int
 
     def __init__(self, generacion, cromosoma):
@@ -24,10 +24,10 @@ class Gen:
         self.generacion = generacion
 
     def calcular_aptitud(self):
-        valmax = 0
+        valmax = 0.0
         for i in self.cromosoma:
             valmax += i**2
-        self.aptitud = int(valmax)
+        self.aptitud = valmax
 
     def mutacion(self):
         for i in range(tam_cromosoma):
@@ -87,7 +87,7 @@ for _ in range(tam_poblacion):
 print(min(poblacion, key=lambda x: x.aptitud))
 
 # Iteracion para 500 generaciones
-while generacion_global < 500:
+while generacion_global < 5000:
     # Generando nueva poblacion
     generacion_global += 1
     gen1 = seleccion_torneo(poblacion)
