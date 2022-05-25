@@ -5,7 +5,7 @@ import statistics
 
 
 tam_cromosoma = 10
-tam_poblacion = 50
+tam_poblacion = 20
 k_torneo = 2  # tam de la poblacion del torneo
 
 humbral = 0.1
@@ -20,7 +20,7 @@ class Gen:
 
     def __init__(self, generacion, cromosoma):
         self.cromosoma = cromosoma
-        self.fitness1()
+        self.fitness6()
         self.generacion = generacion
 
 # **********************************************************************************************************************
@@ -157,8 +157,8 @@ def GA():
             descendiente1.mutacion()
             descendiente2.mutacion()
 
-            descendiente1.fitness1()
-            descendiente2.fitness1()
+            descendiente1.fitness6()
+            descendiente2.fitness6()
             evaluaciones += 2
             # Remplazo Elitita
             elitism_replacement(poblacion, descendiente1)
@@ -188,6 +188,6 @@ medianT = statistics.median(tiempo)
 sigmaT = statistics.pstdev(tiempo)
 
 print("aptitud: ")
-print(str(mejorA) + " " + str(peorA) + " " + str(meanA) + " " + str(medianA) + " " + str(sigmaA))
+print(str(round(mejorA,2)) + " " + str(round(peorA,2)) + " " + str(round(meanA,2)) + " " + str(round(medianA,2)) + " " + str(round(sigmaA,2)))
 print("Tiempo: ")
-print(str(mejorT) + " " + str(peorT) + " " + str(meanT) + " " + str(medianT) + " " + str(sigmaT))
+print(str(round(mejorT,2)) + " " + str(round(peorT,2)) + " " + str(round(meanT,2)) + " " + str(round(medianT,2)) + " " + str(round(sigmaT,2)))
