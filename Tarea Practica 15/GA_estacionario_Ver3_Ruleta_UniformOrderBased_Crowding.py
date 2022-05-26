@@ -7,7 +7,7 @@ import statistics
 tam_cromosoma = 10
 tam_poblacion = 10
 
-humbral = 0.1
+umbral = 0.1
 
 prob_cruzamiento = 0.5
 
@@ -31,9 +31,7 @@ class Gen:
             valmax += abs(i*(math.sin(i))+0.1*(i))
         self.aptitud = valmax
 
-
     # Dixon & Price Function
-
 
     def fitness2(self):
         valmax = (self.cromosoma[0] - 1)**2
@@ -43,7 +41,6 @@ class Gen:
 
     # Quintic Function
 
-
     def fitness3(self):
         valmax = 0
         for i in self.cromosoma:
@@ -51,7 +48,6 @@ class Gen:
         self.aptitud = valmax
 
     # Schwefel 2.23 Function
-
 
     def fitness4(self):
         valmax = 0
@@ -61,16 +57,15 @@ class Gen:
 
     # Streched V Sine Wave Function
 
-
     def fitness5(self):
         valmax = 0
         for i in range(tam_cromosoma - 1):
             valmax += ((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.25) * \
-                ((math.sin(50*((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.1))**2)+0.1)
+                ((math.sin(
+                    50*((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.1))**2)+0.1)
         self.aptitud = valmax
 
     # Sum Squares Function
-
 
     def fitness6(self):
         valmax = 0
@@ -82,12 +77,12 @@ class Gen:
 
     def mutacion(self):
         for i in range(tam_cromosoma):
-            if random.random() < humbral:
+            if random.random() < umbral:
                 self.cromosoma[i] = random.uniform(-10, 10)
 
     def __str__(self):
         cromosoma_str = [round(x, 2) for x in self.cromosoma]
-        return "< Crom: " + str(cromosoma_str) + " Apt: " + str(round(self.aptitud,2)) + " Gen: " + str(self.generacion) + " >"
+        return "< Crom: " + str(cromosoma_str) + " Apt: " + str(round(self.aptitud, 2)) + " Gen: " + str(self.generacion) + " >"
 
 
 # Con Valores de Representaciones de Orden
@@ -173,6 +168,7 @@ def crowding_replacement(poblacion, descendiente1, descendiente2, padre1, padre2
 
 # **********************************************************************************************************************
 
+
 def GA():
     poblacion = []
     generacion_global = 1
@@ -205,7 +201,7 @@ def GA():
             evaluaciones += 2
             # Remplazo Elitita
             crowding_replacement(poblacion, descendiente1,
-                                descendiente2, gen1, gen2)
+                                 descendiente2, gen1, gen2)
         else:
             poblacion.append(gen1)
             poblacion.append(gen2)
@@ -234,6 +230,8 @@ medianT = statistics.median(tiempo)
 sigmaT = statistics.pstdev(tiempo)
 
 print("aptitud: ")
-print(str(round(mejorA,2)) + " " + str(round(peorA,2)) + " " + str(round(meanA,2)) + " " + str(round(medianA,2)) + " " + str(round(sigmaA,2)))
+print(str(round(mejorA, 2)) + " " + str(round(peorA, 2)) + " " +
+      str(round(meanA, 2)) + " " + str(round(medianA, 2)) + " " + str(round(sigmaA, 2)))
 print("Tiempo: ")
-print(str(round(mejorT,2)) + " " + str(round(peorT,2)) + " " + str(round(meanT,2)) + " " + str(round(medianT,2)) + " " + str(round(sigmaT,2)))
+print(str(round(mejorT, 2)) + " " + str(round(peorT, 2)) + " " +
+      str(round(meanT, 2)) + " " + str(round(medianT, 2)) + " " + str(round(sigmaT, 2)))

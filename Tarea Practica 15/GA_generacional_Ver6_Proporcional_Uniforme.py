@@ -1,16 +1,17 @@
-import math
+from copy import copy
 import random
+import math
 from time import time
 import statistics
 
-
-tam_cromosoma = 10
+tam_cromosoma = 30
 tam_poblacion = 20
-k_torneo = 2  # tam de la poblacion del torneo
-
+#generacion_global = 1
 umbral = 0.1
-
 prob_cruzamiento = 0.5
+
+#poblacion = []
+#nueva_poblacion = []
 
 
 class Gen:
@@ -20,55 +21,49 @@ class Gen:
 
     def __init__(self, generacion, cromosoma):
         self.cromosoma = cromosoma
-        self.fitness6()
+        self.calcular_aptitud3()
         self.generacion = generacion
 
 # **********************************************************************************************************************
-    # Alpine 1 Function
 
-    def fitness1(self):
-        valmax = 0.0
+# Alpine 1 Function
+    def calcular_aptitud1(self):
+        valmax = 0
         for i in self.cromosoma:
             valmax += abs(i*(math.sin(i))+0.1*(i))
         self.aptitud = valmax
 
-    # Dixon & Price Function
-
-    def fitness2(self):
+# Dixon & Price Function
+    def calcular_aptitud2(self):
         valmax = (self.cromosoma[0] - 1)**2
         for i in range(1, tam_cromosoma):
             valmax += i*(2*math.sin(self.cromosoma[i])-self.cromosoma[i-1])**2
         self.aptitud = valmax
 
-    # Quintic Function
-
-    def fitness3(self):
+# Quintic Function
+    def calcular_aptitud3(self):
         valmax = 0
         for i in self.cromosoma:
             valmax += abs((i**5)-(3*(i**4))+(4*(i**3))-(2*(i**2))-(10*i)-4)
         self.aptitud = valmax
 
-    # Schwefel 2.23 Function
-
-    def fitness4(self):
+# Schwefel 2.23 Function
+    def calcular_aptitud4(self):
         valmax = 0
         for i in self.cromosoma:
             valmax += i**10
         self.aptitud = valmax
 
-    # Streched V Sine Wave Function
-
-    def fitness5(self):
+# Streched V Sine Wave Function
+    def calcular_aptitud5(self):
         valmax = 0
-        for i in range(tam_cromosoma - 1):
-            valmax += ((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.25) * \
-                ((math.sin(
-                    50*((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.1))**2)+0.1)
+        for i in range(tam_cromosoma-1):
+            valmax += ((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.25)*(
+                (math.sin(50*((self.cromosoma[i+1]**2 + self.cromosoma[i]**2)**0.1))**2)+0.1)
         self.aptitud = valmax
 
-    # Sum Squares Function
-
-    def fitness6(self):
+# Sum Squares Function
+    def calcular_aptitud6(self):
         valmax = 0
         for j, xi in enumerate(self.cromosoma):
             valmax += j * (xi**2)
@@ -83,7 +78,7 @@ class Gen:
 
     def __str__(self):
         cromosoma_str = [round(x, 2) for x in self.cromosoma]
-        return "< Apt: " + str(round(self.aptitud, 2)) + " Gen: " + str(self.generacion) + " >"
+        return "< Crom: " + str(cromosoma_str) + " Apt: " + str(self.aptitud) + " Gen: " + str(self.generacion) + " >"
 
 
 # Con Valores de Representaciones de Orden
@@ -93,13 +88,28 @@ def generar_cromosoma():
     return cromosoma
 
 
-def seleccion_torneo(poblacion):
-    torneo = []
-    for i in range(k_torneo):
-        seleccion = random.randint(0, tam_poblacion - 1)
-        gen = poblacion[seleccion]
-        torneo.append(gen)
-    return min(torneo, key=lambda x: x.aptitud)
+def seleccion_proporcional(poblacion):
+
+    probabilidad = []
+    probTotal = 0
+    flecha = random.random()
+    ruleta = [0]
+
+    for i in poblacion:
+        probTotal += i.aptitud
+
+    for i in poblacion:
+        probabilidad.append(i.aptitud / probTotal)
+
+    for i in range(tam_poblacion):
+        ruleta.append(probabilidad[i]+ruleta[i])
+
+    ruleta.append(flecha)
+    ruleta.sort()
+    posicion = ruleta.index(flecha)
+    apareamiento = poblacion[posicion-1]
+
+    return apareamiento
 
 
 def uniform_crossover(gen1, gen2):
@@ -116,19 +126,17 @@ def uniform_crossover(gen1, gen2):
     return descendienteA, descendienteB
 
 
-def elitism_replacement(poblacion, descendiente):
-    # Seleccion de Peor (Minimizar)
-    reemplazo = max(poblacion, key=lambda x: x.aptitud)
-
-    if descendiente.aptitud < reemplazo.aptitud:
-        poblacion.pop(poblacion.index(reemplazo))
-        poblacion.append(descendiente)
+def replacement(poblacion, nueva_poblacion):
+    poblacion.clear()
+    poblacion.extend(nueva_poblacion)
+    nueva_poblacion.clear()
 
 # **********************************************************************************************************************
 
 
 def GA():
     poblacion = []
+    nueva_poblacion = []
     generacion_global = 1
     evaluaciones = 0
 
@@ -137,14 +145,17 @@ def GA():
         poblacion.append(Gen(generacion_global, generar_cromosoma()))
         evaluaciones += 1
 
-    # Iteracion para 500 evaluaciones
-    while evaluaciones < 500:
+    # Iteracion para 500 generaciones
+    while generacion_global < 500:
         # Generando nueva poblacion
         generacion_global += 1
-        gen1 = seleccion_torneo(poblacion)
-        gen2 = seleccion_torneo(poblacion)
-        # Probabilidad de Cruzamiento.
-        if random.random() > prob_cruzamiento:
+        while len(nueva_poblacion) != tam_poblacion:
+
+            if random.random() > prob_cruzamiento:
+                continue
+
+            gen1 = seleccion_proporcional(poblacion)
+            gen2 = seleccion_proporcional(poblacion)
             # Cruzamiento de los padres
             crom_des1, crom_des2 = uniform_crossover(gen1, gen2)
             descendiente1 = Gen(generacion_global, crom_des1)
@@ -153,12 +164,15 @@ def GA():
             descendiente1.mutacion()
             descendiente2.mutacion()
 
-            descendiente1.fitness6()
-            descendiente2.fitness6()
+            descendiente1.calcular_aptitud3()
+            descendiente2.calcular_aptitud3()
             evaluaciones += 2
-            # Remplazo Elitita
-            elitism_replacement(poblacion, descendiente1)
-            elitism_replacement(poblacion, descendiente2)
+
+            # Insertando el descendiente en la nueva poblacion
+            nueva_poblacion.append(descendiente1)
+            nueva_poblacion.append(descendiente2)
+
+        replacement(poblacion, nueva_poblacion)
 
     return min(poblacion, key=lambda x: x.aptitud)
 
