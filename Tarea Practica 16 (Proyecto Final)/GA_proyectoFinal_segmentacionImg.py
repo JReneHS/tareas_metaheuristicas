@@ -1,10 +1,8 @@
-from email.errors import InvalidBase64LengthDefect
 import random
 
 
 tam_cromosoma = 3
 tam_poblacion = 10
-#generacion_global = 1
 k_torneo = 2  # tam de la poblacion del torneo
 humbral = 0.8
 prob_cruzamiento = 0.6
@@ -140,6 +138,8 @@ generacion_global = 1
 # Generacion Inicial aleatoria
 for _ in range(tam_poblacion):
     poblacion.append(Gen(generacion_global, generar_cromosoma()))
+
+print(max(poblacion, key=lambda x: x.aptitud))
 
 # Iteracion para 500 generaciones
 while generacion_global < iteraciones:
