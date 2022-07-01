@@ -2,14 +2,22 @@ import random
 import matplotlib.image as image
 
 tam_cromosoma = 3
-tam_poblacion = 10
+tam_poblacion = 4
 k_torneo = 2  # tam de la poblacion del torneo
 humbral = 0.8
 prob_cruzamiento = 0.6
-iteraciones = 50
+iteraciones = 20
 tam_imagen = 5
 
-imagen = [[250, 201, 100], [25, 251, 10], [125, 150, 7]]
+#imagen = [[250, 201, 100], [25, 251, 10], [125, 150, 7]]
+ruta = "Imagenes_Reducidas/"
+nombre = "Y49_130x147"
+formato = ".jpg"
+
+ruta_Completa = ruta + nombre + formato
+
+
+imagen = image.imread(ruta_Completa)
 
 
 class Gen:
@@ -30,18 +38,18 @@ class Gen:
         for i in imagen:
             for j in i:
                 dist_pixel = []
-                dist_pixel.append(minkowsky(j, self.cromosoma[0]))
-                dist_pixel.append(minkowsky(j, self.cromosoma[1]))
-                dist_pixel.append(minkowsky(j, self.cromosoma[2]))
+                dist_pixel.append(minkowsky(j[0], self.cromosoma[0]))
+                dist_pixel.append(minkowsky(j[0], self.cromosoma[1]))
+                dist_pixel.append(minkowsky(j[0], self.cromosoma[2]))
 
                 segmentacion = dist_pixel.index(min(dist_pixel))
 
                 if segmentacion == 0:
-                    parametros[0].append(j)
+                    parametros[0].append(j[0])
                 elif segmentacion == 1:
-                    parametros[1].append(j)
+                    parametros[1].append(j[0])
                 elif segmentacion == 2:
-                    parametros[2].append(j)
+                    parametros[2].append(j[0])
 
         dist_min = [[], [], []]
 
@@ -78,6 +86,7 @@ class Gen:
 
 # **********************************************************************************************************************
 
+
     def mutacion(self):
         for i in range(tam_cromosoma):
             if random.random() < humbral:
@@ -96,7 +105,7 @@ def generar_cromosoma():
 
 
 def minkowsky(x, y):
-    return abs(x-y)
+    return abs(int(x) - int(y))
 
 
 def seleccion_torneo(poblacion):
