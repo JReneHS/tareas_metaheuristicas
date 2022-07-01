@@ -2,14 +2,12 @@ import random
 import matplotlib.image as image
 
 tam_cromosoma = 3
-tam_poblacion = 4
+tam_poblacion = 6
 k_torneo = 2  # tam de la poblacion del torneo
 humbral = 0.8
 prob_cruzamiento = 0.6
 iteraciones = 20
-tam_imagen = 5
 
-#imagen = [[250, 201, 100], [25, 251, 10], [125, 150, 7]]
 ruta = "Imagenes_Reducidas/"
 nombre = "Y49_130x147"
 formato = ".jpg"
